@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Transformers\ForecastTransformer;
 use Illuminate\Http\Request;
 use Validator;
 use Http;
@@ -24,8 +25,10 @@ class forecastWeather extends Controller
 
         $res = $this->getWeather($data['lat'], $data['long']);
 
+        $arr = [$res];
+        $response = fractal($arr, new ForecastTransformer())->toArray();
 
-        return response()->json($res);
+        return response()->json($response);
     }
     public function getCoordinatefromCity(string $city, string $state, string $country)
     {

@@ -2,16 +2,13 @@
 
 namespace App\Transformers;
 
-use League\Fractal\Resource\Primitive;
+// use League\Fractal\Resource\Primitive;
 use League\Fractal\TransformerAbstract;
 
-
-// Create a top level instance somewhere
 class LocationTransformer extends TransformerAbstract
 {
     public function transform($data)
     {
-
         $dailyData = [
             'date' => $data['daily']['time'][0],
             'max_temperature' => $data['daily']['temperature_2m_max'][0],
@@ -55,15 +52,13 @@ class LocationTransformer extends TransformerAbstract
         return $hourly;
     }
 
+    // public function includeAlert(): Primitive
+    // {
+    //     $alert = [
+    //         'text' => 'foo',
+    //         'bar' => 'bvar'
+    //     ];
 
-
-    public function includeAlert(): Primitive
-    {
-        $alert = [
-            'text' => 'foo',
-            'bar' => 'bvar'
-        ];
-
-        return $this->primitive($alert);
-    }
+    //     return $this->primitive($alert);
+    // }
 }
