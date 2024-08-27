@@ -1,17 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\WeatherController;
-use App\Http\Controllers\previousWeather;
-use App\Http\Controllers\forecastWeather;
-use App\Http\Controllers\alertController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PreviousWeather;
+use App\Http\Controllers\ForecastWeather;
+use App\Http\Controllers\AlertController;
 
 
+Route::get('/', function () {
+    return response()->json(['status' => 'ok', 'time' => now()]);
+});
 
-Route::post("/location", [WeatherController::class, 'sendDataBasedOnLocation']);
-Route::post("/history", [previousWeather::class, 'fetchDataBasedOnLocation']);
-Route::post("/forecast", [forecastWeather::class, 'fetchDataBasedOnLocation']);
-Route::post("/alert", [alertController::class, 'sendAlert']);
+Route::post("location", [LocationController::class, 'sendDataBasedOnLocation']);
+Route::post("/history", [PreviousWeather::class, 'fetchDataBasedOnLocation']);
+Route::post("/forecast", [ForecastWeather::class, 'fetchDataBasedOnLocation']);
+Route::post("/alert", [AlertController::class, 'sendAlert']);
 
 
 

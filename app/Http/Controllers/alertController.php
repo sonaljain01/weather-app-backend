@@ -45,6 +45,7 @@ class alertController extends Controller
         }
 
 
+        
 
     }
     public function getCoordinatefromCity(string $city, string $state, string $country)
