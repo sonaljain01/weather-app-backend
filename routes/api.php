@@ -18,3 +18,4 @@ Route::post("/alert", [alertController::class, 'sendAlert']);
 
 
 
+

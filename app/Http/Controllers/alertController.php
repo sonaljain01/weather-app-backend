@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use Http;
+use Illuminate\Support\Facades\Cache;
 
 class alertController extends Controller
 {
@@ -22,11 +23,29 @@ class alertController extends Controller
             return response()->json($validator->errors());
         }
 
-        $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
+        $data = "";
 
-        $res = $this->fetchAlert($data['lat'], $data['long']);
+        if (Cache::has('lat') && Cache::has('long')) {
+            $data = [
+                "lat" => Cache::get('lat'),
+                "long" => Cache::get('long')
+            ];
+        } else {
+            $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
+            Cache::add("lat", $data['lat'], now()->addHours(4));
+            Cache::add("long", $data['long'], now()->addHours(4));
+        }
+        if (Cache::has('alert')) {
+            $value = Cache::get('alert');
+            return response()->json($value);
+        } else {
+            $res = $this->fetchAlert($data['lat'], $data['long']);
+            Cache::add('alert', $res, now()->addHours(1));
+            return response()->json($res);
+        }
 
-        return response()->json($res);
+
+
     }
     public function getCoordinatefromCity(string $city, string $state, string $country)
     {
@@ -73,12 +92,16 @@ class alertController extends Controller
             $url = "$weather_api_url/current.json?key=$weather_api_key&q=$lat,$long&alert=yes";
             $res = Http::get($url);
 
-            return  $res->json();
+            $alerts = $res->json()['alerts'] ?? null;
 
+            if ($alerts) {
+                return ['message' => $alerts];
+            } else {
+                return ['message' => 'No alert found'];
+            }
         } catch (\Exception $e) {
-            echo "<pre>";
-            print_r($e);
-            echo "</pre>";
+            return ['error' => 'An error occurred while fetching the alert'];
         }
     }
+
 }
