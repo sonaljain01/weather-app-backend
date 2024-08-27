@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Transformers\HistoryTransformer;
 use Validator;
 use Http;
 
@@ -24,8 +25,11 @@ class previousWeather extends Controller
 
         $res = $this->getWeather($data['lat'], $data['long']);
 
+        $arr = [$res];
+        $response = fractal($arr, new HistoryTransformer())->toArray();
 
-        return response()->json($res);
+
+        return response()->json($response);
     }
     public function getCoordinatefromCity(string $city, string $state, string $country)
     {

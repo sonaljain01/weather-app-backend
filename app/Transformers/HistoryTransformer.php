@@ -4,8 +4,9 @@ namespace App\Transformers;
 
 use League\Fractal\TransformerAbstract;
 
-class ForecastTransformer extends TransformerAbstract
+class HistoryTransformer extends TransformerAbstract
 {
+
     public function transform($data)
     {
         $hourly_data = $this->getHourly($data);
@@ -18,9 +19,7 @@ class ForecastTransformer extends TransformerAbstract
             "daily" => $daily_data
         ];
     }
-
-    private function getDaily($data)
-    {
+    private function getDaily($data){
         $daily = [];
         foreach ($data['daily']['time'] as $index => $time) {
             $daily[] = [
@@ -31,7 +30,6 @@ class ForecastTransformer extends TransformerAbstract
 
         return $daily;
     }
-
     private function getHourly($data)
     {
         $hourly = [];
