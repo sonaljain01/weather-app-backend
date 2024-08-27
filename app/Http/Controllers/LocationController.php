@@ -2,12 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use App\Transformers\LocationTransformer;
+use Cache;
+use DB;
 use Http;
 use Illuminate\Http\Request;
 use Validator;
 
-class WeatherController extends Controller
+class LocationController extends Controller
 {
+    // public function getLocation(Request $request)
+    // {
+    //     // $keys = DB::table('cache')->pluck('key');
+    //     // foreach ($keys as $key) {
+    //     //     $lat_lon = str_replace("loc:", "", $key);
+    //     //     checkifincircle($pair1,par2,radius);
+    //     // }
+
+    //     // fetch alert anf save in cache
+    //     $alert = Cache::add('loc:27.54,72.39', [
+    //         'weather' => [],
+    //         'alert' => [],
+    //         'forecast' => [],
+    //         'history' => []
+    //     ], now()->addHours(4));
+
+    //     $data = [
+    //         "city" => $request->city,
+    //         "state" => $request->state,
+    //         "country" => $request->country
+    //     ];
+    // }
+
     public function sendDataBasedOnLocation(Request $request)
     {
 
@@ -25,8 +51,11 @@ class WeatherController extends Controller
 
         $res = $this->getWeather($data['lat'], $data['long']);
 
+        $arr = [$res];
 
-        return response()->json($res);
+        $response = fractal($arr, new LocationTransformer())->toArray();
+
+        return response()->json($response);
     }
 
     public function getCoordinatefromCity(string $city, string $state, string $country)
@@ -83,7 +112,7 @@ class WeatherController extends Controller
             ])->get("$api_base_url?latitude=$lat&longitude=$long&hourly=$temprature,$relative_humidity,$precipitation_probability,$precipitation,$visibility,$wind_speed_10m,$wind_speed_80m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&forecast_days=1&timezone=Asia%2FKolkata");
 
 
-            return $response->json();
+            return $response -> json();
 
         } catch (\Exception $e) {
             echo "<pre>";
