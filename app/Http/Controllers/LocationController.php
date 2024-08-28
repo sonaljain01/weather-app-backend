@@ -37,17 +37,22 @@ class LocationController extends Controller
     public function sendDataBasedOnLocation(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            'city' => 'required',
-            "state" => 'required',
-            "country" => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
+        if ($request->city == null && $request->state == null && $request->country == null && $request->loc == null) {
+            return response()->json([
+                "message" => "Please provide atleast any one of city, state, country or loc"
+            ]);
         }
 
-        $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
+        $data = [];
+        if ($request->loc != null) {
+            sscanf($request->loc, "%[^,],%[^,]", $lat, $long);
+            $data = [
+                "lat" => $lat,
+                "long" => $long
+            ];
+        } else {
+            $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
+        }
 
         $res = $this->getWeather($data['lat'], $data['long']);
 
@@ -112,7 +117,7 @@ class LocationController extends Controller
             ])->get("$api_base_url?latitude=$lat&longitude=$long&hourly=$temprature,$relative_humidity,$precipitation_probability,$precipitation,$visibility,$wind_speed_10m,$wind_speed_80m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&forecast_days=1&timezone=Asia%2FKolkata");
 
 
-            return $response -> json();
+            return $response->json();
 
         } catch (\Exception $e) {
             echo "<pre>";
