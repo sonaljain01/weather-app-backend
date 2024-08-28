@@ -5,6 +5,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PreviousController;
 use App\Http\Controllers\ForecastController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\SuggestionController;
 
 
 Route::get('/', function () {
@@ -15,7 +16,7 @@ Route::post("location", [LocationController::class, 'sendDataBasedOnLocation']);
 Route::post("/history", [PreviousController::class, 'fetchDataBasedOnLocation']);
 Route::post("/forecast", [ForecastController::class, 'fetchDataBasedOnLocation']);
 Route::post("/alert", [AlertController::class, 'sendAlert']);
-
+Route::post('/suggestion', [SuggestionController::class, 'suggestion']);
 
 
 
