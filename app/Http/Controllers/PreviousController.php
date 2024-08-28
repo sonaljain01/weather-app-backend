@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Transformers\ForecastTransformer;
 use Illuminate\Http\Request;
+use App\Transformers\HistoryTransformer;
 use Validator;
 use Http;
 
-class forecastWeather extends Controller
+class PreviousController extends Controller
 {
     public function fetchDataBasedOnLocation(Request $request)
     {
@@ -26,7 +26,8 @@ class forecastWeather extends Controller
         $res = $this->getWeather($data['lat'], $data['long']);
 
         $arr = [$res];
-        $response = fractal($arr, new ForecastTransformer())->toArray();
+        $response = fractal($arr, new HistoryTransformer())->toArray();
+
 
         return response()->json($response);
     }
@@ -77,7 +78,7 @@ class forecastWeather extends Controller
 
             $response = Http::withHeaders([
                 "Content-Type" => "application/json",
-            ])->get("$api_base_url?latitude=$lat&longitude=$long&hourly=$temprature,$precipitation_probability,$precipitation&daily=temperature_2m_max&timezone=Asia%2FKolkata&forecast_days=14");
+            ])->get("$api_base_url?latitude=$lat&longitude=$long&hourly=$temprature,$precipitation_probability,$precipitation&daily=temperature_2m_max&timezone=Asia%2FKolkata&past_days=7&forecast_days=1");
 
 
             return $response->json();

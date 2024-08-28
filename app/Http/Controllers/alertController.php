@@ -8,7 +8,7 @@ use Validator;
 use Http;
 use Illuminate\Support\Facades\Cache;
 
-class alertController extends Controller
+class AlertController extends Controller
 {
     public function sendAlert(Request $request)
     {
