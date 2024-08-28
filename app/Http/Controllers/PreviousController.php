@@ -11,17 +11,23 @@ class PreviousController extends Controller
 {
     public function fetchDataBasedOnLocation(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'city' => 'required',
-            "state" => 'required',
-            "country" => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
+        if ($request->city == null && $request->state == null && $request->country == null && $request->loc == null) {
+            return response()->json([
+                "message" => "Please provide atleast any one of city, state, country or loc"
+            ]);
         }
 
-        $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
+        $data = [];
+        if ($request->loc != null) {
+            sscanf($request->loc, "%[^,],%[^,]", $lat, $long);
+            $data = [
+                "lat" => $lat,
+                "long" => $long
+            ];
+        } else {
+            $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
+        }
+
 
         $res = $this->getWeather($data['lat'], $data['long']);
 
