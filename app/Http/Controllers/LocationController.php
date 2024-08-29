@@ -63,7 +63,7 @@ class LocationController extends Controller
 
 
         $cache = Cache::get($locationKey);
-        
+
         if (empty($cache)) {
             $cache = [
                 "weather" => $response,
@@ -72,6 +72,25 @@ class LocationController extends Controller
             $cache = Cache::add($locationKey, $cache, now()->addHours(4));
             return response()->json($response);
         }
+        $dataSet = [];
+        if (empty($cache["forecast"])) {
+            $dataSet = [
+                'history' => $cache['history'] ?? null,
+                "weather" => $response,
+                "alert" => $alert
+            ];
+        }
+        if (empty($cache["history"])) {
+            $dataSet = [
+                "weather" => $response,
+                "alert" => $alert,
+                "forecast" => $cache["forecast"] ?? null
+            ];
+        }
+
+        $cache = Cache::put($locationKey, $dataSet, now()->addHours(4));
+
+        return response()->json($response);
     }
 
     public function getCoordinatefromCity(string $city, string $state, string $country)
