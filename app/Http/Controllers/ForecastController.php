@@ -6,7 +6,8 @@ use App\Transformers\ForecastTransformer;
 use Illuminate\Http\Request;
 use Validator;
 use Http;
-
+use DB;
+use Cache;
 class ForecastController extends Controller
 {
     public function fetchDataBasedOnLocation(Request $request)
@@ -16,7 +17,6 @@ class ForecastController extends Controller
                 "message" => "Please provide atleast any one of city, state, country or loc"
             ]);
         }
-
 
         $data = [];
         if ($request->loc != null) {

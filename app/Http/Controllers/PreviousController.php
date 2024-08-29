@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Transformers\HistoryTransformer;
 use Validator;
 use Http;
+use DB;
+use Cache;
 
 class PreviousController extends Controller
 {
@@ -16,6 +18,7 @@ class PreviousController extends Controller
                 "message" => "Please provide atleast any one of city, state, country or loc"
             ]);
         }
+
 
         $data = [];
         if ($request->loc != null) {

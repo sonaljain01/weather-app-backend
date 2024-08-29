@@ -7,33 +7,9 @@ use Cache;
 use DB;
 use Http;
 use Illuminate\Http\Request;
-use Validator;
 
 class LocationController extends Controller
 {
-    // public function getLocation(Request $request)
-    // {
-    //     // $keys = DB::table('cache')->pluck('key');
-    //     // foreach ($keys as $key) {
-    //     //     $lat_lon = str_replace("loc:", "", $key);
-    //     //     checkifincircle($pair1,par2,radius);
-    //     // }
-
-    //     // fetch alert anf save in cache
-    //     $alert = Cache::add('loc:27.54,72.39', [
-    //         'weather' => [],
-    //         'alert' => [],
-    //         'forecast' => [],
-    //         'history' => []
-    //     ], now()->addHours(4));
-
-    //     $data = [
-    //         "city" => $request->city,
-    //         "state" => $request->state,
-    //         "country" => $request->country
-    //     ];
-    // }
-
     public function sendDataBasedOnLocation(Request $request)
     {
 
@@ -42,6 +18,8 @@ class LocationController extends Controller
                 "message" => "Please provide atleast any one of city, state, country or loc"
             ]);
         }
+
+        $keys = DB::table('cache')->pluck('key');
 
         $data = [];
         if ($request->loc != null) {
@@ -53,14 +31,47 @@ class LocationController extends Controller
         } else {
             $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
         }
+        $locationKey = 'loc: ' . $data['lat'] . ',' . $data['long'];
+        if (Cache::has($locationKey)) {
+            $cache = Cache::get($locationKey);
+            if (!empty($cache["weather"])) {
+                return response()->json($cache['weather']);
+            }
+        }
+
+        foreach ($keys as $key) {
+            $lat_lon = str_replace("loc: ", "", $key);
+            sscanf($lat_lon, "%[^,],%[^,]", $lata, $longa);
+            $dataSent = [
+                "long" => $data['long'],
+                "lat" => $data['lat'],
+                "longa" => $longa,
+                "lata" => $lata,
+            ];
+            if (checkisinCircle($dataSent)) {
+                $cache = Cache::get($key);
+                if (!empty($cache["weather"])) {
+                    return response()->json($cache["weather"]);
+                }
+            }
+        }
 
         $res = $this->getWeather($data['lat'], $data['long']);
-
+        $alert = $this->fetchAlert($data['lat'], $data['long']);
         $arr = [$res];
-
         $response = fractal($arr, new LocationTransformer())->toArray();
 
-        return response()->json($response);
+
+        $cache = Cache::get($locationKey);
+        
+        if (empty($cache)) {
+            $cache = [
+                "weather" => $response,
+                "alert" => $alert
+            ];
+            $cache = Cache::add($locationKey, $cache, now()->addHours(4));
+            return response()->json($response);
+        }
     }
 
     public function getCoordinatefromCity(string $city, string $state, string $country)
@@ -125,5 +136,25 @@ class LocationController extends Controller
             echo "</pre>";
         }
 
+    }
+    public function fetchAlert(string $lat, string $long)
+    {
+        $weather_api_url = config("api.weather_api_url");
+        $weather_api_key = config("api.weather_api_key");
+
+        try {
+            $url = "$weather_api_url/current.json?key=$weather_api_key&q=$lat,$long&alert=yes";
+            $res = Http::get($url);
+
+            $alerts = $res->json()['alerts'] ?? null;
+
+            if ($alerts) {
+                return ['message' => $alerts];
+            } else {
+                return ['message' => 'No alert found'];
+            }
+        } catch (\Exception $e) {
+            return ['error' => 'An error occurred while fetching the alert'];
+        }
     }
 }
