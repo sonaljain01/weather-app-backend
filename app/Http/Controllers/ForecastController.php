@@ -67,18 +67,18 @@ class ForecastController extends Controller
             ];
             $cache = Cache::add($locationKey, $cache, now()->addHours(4));
 
-            return response()->json($res);
+            return response()->json($response);
         } else {
             if (empty($cache["weather"])) {
                 $cacheData = [
-                    'forecast' => $res,
+                    'forecast' => $response,
                 ];
             } else {
                 $cacheData = [
                     'history' => $cache['history'] ?? null,
                     'weather' => $cache['weather'],
                     'alert' => $cache['alert'],
-                    'forecast' => $res,
+                    'forecast' => $response,
                 ];
             }
         }
