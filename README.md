@@ -3,6 +3,8 @@
 
 A Weather App Backend used to send current weather data, including forecast and weather history and weather alert. WeatherAPI provides weather data, including current, 14-day, future, and historical weather, as well as geo data, time zone information, and astronomy data.
 
+**Note:** Api is live on [this](https://cjxiaojia.com/).
+
 ## API Reference
 
 #### Get location Data
@@ -13,9 +15,11 @@ A Weather App Backend used to send current weather data, including forecast and 
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
+| `city`            | `string` | **Optional**|
+| `state`           | `string` | **Optional**|
+| `country`         | `string` | **Optional**|
+| `lat`             | `string` | **Optional**|
+| `long`            | `string` | **Optional**|
 
 #### Get weather forecat
 
@@ -25,9 +29,11 @@ A Weather App Backend used to send current weather data, including forecast and 
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
+| `city`            | `string` | **Optional**|
+| `state`           | `string` | **Optional**|
+| `country`         | `string` | **Optional**|
+| `lat`             | `string` | **Optional**|
+| `long`            | `string` | **Optional**|
 
 #### Get weather history
 
@@ -37,28 +43,22 @@ A Weather App Backend used to send current weather data, including forecast and 
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
+| `city`            | `string` | **Optional**|
+| `state`           | `string` | **Optional**|
+| `country`         | `string` | **Optional**|
+| `lat`             | `string` | **Optional**|
+| `long`            | `string` | **Optional**|
 
 
-#### Get weather alert
+#### Get Location Suggestion
 
 ```http
-  POST /api/alert
+  POST /api/suggestion
 ```
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
-
-
-
-
-## Required
-PHP version 8.3, 
+| `data`            | `string` | **Required min:3 max:255**|
 
 
 ## Run Locally
@@ -75,24 +75,44 @@ Go to the project directory
   cd weather-app-backend
 ```
 
+Install Dependencies
+
+
+```bash
+  composer install
+```
+
+Migrate data to database
+
+
+```bash
+php artisan migrate
+```
 
 Start the server
 
 ```bash
-  herd open
+  herd open || php artisan serve
 ```
 
-    
+## Response Schema
+
+[Postman](https://www.postman.com/sonaljain01/workspace/weather-app-backend/request/37798694-41476040-32d3-4961-b41e-1d906ef645b5)
 ## Tech Stack
 
 **Client:** PHP, Laravel
 
 **Server:** Herd
 
+## Required
+PHP version 8.3
+
 
 ## Documentation
 
 [Herd](https://herd.laravel.com/docs/windows/1/getting-started/about-herd)
+
+[Laravel](https://laravel.com/docs/11.x/installation)
 
 
 ## Contribution
