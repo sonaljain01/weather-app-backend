@@ -3,6 +3,8 @@
 
 A Weather App Backend used to send current weather data, including forecast and weather history and weather alert. WeatherAPI provides weather data, including current, 14-day, future, and historical weather, as well as geo data, time zone information, and astronomy data.
 
+**Note:** Api is live on [this](https://cjxiaojia.com/).
+
 ## API Reference
 
 #### Get location Data
@@ -59,12 +61,6 @@ A Weather App Backend used to send current weather data, including forecast and 
 | `data`            | `string` | **Required min:3 max:255**|
 
 
-
-
-## Optional
-PHP version 8.3, 
-
-
 ## Run Locally
 
 Clone the project
@@ -79,11 +75,24 @@ Go to the project directory
   cd weather-app-backend
 ```
 
+Install Dependencies
+
+
+```bash
+  composer install
+```
+
+Migrate data to database
+
+
+```bash
+php artisan migrate
+```
 
 Start the server
 
 ```bash
-  herd open
+  herd open || php artisan serve
 ```
 
 ## Response Schema
@@ -95,10 +104,15 @@ Start the server
 
 **Server:** Herd
 
+## Required
+PHP version 8.3
+
 
 ## Documentation
 
 [Herd](https://herd.laravel.com/docs/windows/1/getting-started/about-herd)
+
+[Laravel](https://laravel.com/docs/11.x/installation)
 
 
 ## Contribution
