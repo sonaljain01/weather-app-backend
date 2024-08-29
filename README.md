@@ -13,9 +13,11 @@ A Weather App Backend used to send current weather data, including forecast and 
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
+| `city`            | `string` | **Optional**|
+| `state`           | `string` | **Optional**|
+| `country`         | `string` | **Optional**|
+| `lat`             | `string` | **Optional**|
+| `long`            | `string` | **Optional**|
 
 #### Get weather forecat
 
@@ -25,9 +27,11 @@ A Weather App Backend used to send current weather data, including forecast and 
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
+| `city`            | `string` | **Optional**|
+| `state`           | `string` | **Optional**|
+| `country`         | `string` | **Optional**|
+| `lat`             | `string` | **Optional**|
+| `long`            | `string` | **Optional**|
 
 #### Get weather history
 
@@ -37,27 +41,27 @@ A Weather App Backend used to send current weather data, including forecast and 
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
+| `city`            | `string` | **Optional**|
+| `state`           | `string` | **Optional**|
+| `country`         | `string` | **Optional**|
+| `lat`             | `string` | **Optional**|
+| `long`            | `string` | **Optional**|
 
 
-#### Get weather alert
+#### Get Location Suggestion
 
 ```http
-  POST /api/alert
+  POST /api/suggestion
 ```
 
 | Parameter         | Type     | Description |
 | :-----------------| :------- | :---------  |
-| `city`            | `string` | **Required**|
-| `state`           | `string` | **Required**|
-| `country`         | `string` | **Required**|
+| `data`            | `string` | **Required min:3 max:255**|
 
 
 
 
-## Required
+## Optional
 PHP version 8.3, 
 
 
@@ -82,7 +86,9 @@ Start the server
   herd open
 ```
 
-    
+## Response Schema
+
+[Postman](https://www.postman.com/sonaljain01/workspace/weather-app-backend/request/37798694-41476040-32d3-4961-b41e-1d906ef645b5)
 ## Tech Stack
 
 **Client:** PHP, Laravel
