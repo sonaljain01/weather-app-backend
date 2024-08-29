@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Transformers\HistoryTransformer;
 use Validator;
 use Http;
+use DB;
+use Cache;
 
 class PreviousController extends Controller
 {
@@ -18,6 +20,9 @@ class PreviousController extends Controller
         }
 
         $data = [];
+
+        $keys = DB::table('cache')->pluck('key');
+
         if ($request->loc != null) {
             sscanf($request->loc, "%[^,],%[^,]", $lat, $long);
             $data = [
@@ -28,14 +33,61 @@ class PreviousController extends Controller
             $data = $this->getCoordinatefromCity($request->city, $request->state, $request->country);
         }
 
+        $locationKey = "loc: " . $data['lat'] . "," . $data['long'];
+        if (Cache::has($locationKey)) {
+            $cache = Cache::get($locationKey);
+            if (!empty($cachedData['history'])) {
+                return response()->json($cache['history']);
+            }
+        }
 
+        foreach ($keys as $key) {
+            $lat_lon = str_replace("loc:", "", $key);
+            sscanf($lat_lon, "%[^,],%[^,]", $lata, $longa);
+
+            $dataSent = [
+                "long" => $data['long'],
+                "lat" => $data['lat'],
+                "longa" => $longa,
+                "lata" => $lata
+            ];
+            if (checkisinCircle($dataSent)) {
+                $cache = Cache::get($key);
+                if (!empty($cache["history"])) {
+                    return response()->json($cache["history"]);
+                }
+            }
+        }
+
+        $cache = Cache::get($locationKey);
         $res = $this->getWeather($data['lat'], $data['long']);
-
         $arr = [$res];
         $response = fractal($arr, new HistoryTransformer())->toArray();
 
+        if (empty($cache)) {
+            $cache = [
+                "history" => $response
+            ];
+            $cache = Cache::add($locationKey, $cache, now()->addHours(4));
+            return response()->json($res);
+        } else {
+            if (empty($cache["weather"])) {
+                $cacheData = [
+                    'history' => $response,
+                ];
+            } else {
+                $cacheData = [
+                    'forecast' => $cache['forecast'] ?? null,
+                    'weather' => $cache['weather'],
+                    'alert' => $cache['alert'],
+                    'history' => $res,
+                ];
+            }
+        }
+        $cache = Cache::put($locationKey, $cacheData, now()->addHours(4));
 
         return response()->json($response);
+
     }
     public function getCoordinatefromCity(string $city, string $state, string $country)
     {
