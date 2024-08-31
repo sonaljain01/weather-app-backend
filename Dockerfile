@@ -1,4 +1,3 @@
-GNU nano 6.2                                                                                        Dockerfile
 FROM php:8.3-fpm
 WORKDIR /var/www
 # Install system dependencies
